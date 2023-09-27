@@ -7,7 +7,6 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -227,8 +226,11 @@ func (c *Client) Transcribe(h io.Reader, opts ...TranscribeOption) (*TranscribeR
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		io.Copy(os.Stderr, r)
-		return nil, fmt.Errorf("unexpected response: %s", resp.Status)
+		var e Error
+		if err = json.NewDecoder(r).Decode(&e); err != nil {
+			return nil, err
+		}
+		return nil, errorHandler(&e)
 	}
 
 	var tr TranscribeResponse

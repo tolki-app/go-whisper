@@ -1,3 +1,3 @@
-module github.com/nmeilick/go-whisper
+module github.com/tolki-app/go-whisper
 
 go 1.20
