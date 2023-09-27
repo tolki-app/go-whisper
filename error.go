@@ -1,28 +1,25 @@
 package whisper
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 )
 
 var ErrAudioFormat = errors.New("the audio file could not be decoded or its format is not supported")
 
-type Error struct {
-	Message string
-	Type    string
-	Param   *string
-	Code    *int
+type ErrorResult map[string]any
+
+func (e *ErrorResult) Error() string {
+	data, _ := json.Marshal(e)
+	return string(data)
 }
 
-func (e *Error) Error() string {
-	return e.Message
-}
-
-func errorHandler(err *Error) error {
+func errorHandler(err *ErrorResult) error {
 	if err == nil {
 		return nil
 	}
-	if strings.Contains(err.Message, "The audio file could not be decoded or its format is not supported") {
+	if strings.Contains(err.Error(), "The audio file could not be decoded or its format is not supported") {
 		return ErrAudioFormat
 	}
 	return err
